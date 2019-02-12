@@ -100,7 +100,7 @@ let
           (import ./patchsets.nix {
             inherit patchSet useRailsExpress ops;
             patchLevel = ver.patchLevel;
-          })."${ver.majMinTiny}";
+          })."${ver.majMinTiny}" or [];
 
         postUnpack = ''
           cp -r ${unpackdir rubygemsSrc} ${sourceRoot}/rubygems
@@ -201,6 +201,10 @@ let
     ) args; in self;
 
 in {
+  mkRuby = { version, ... } @ args: generic (args // {
+    version = builtins.foldl' (a: b: a b) rubyVersion version;
+  });
+
   ruby_2_3 = generic {
     version = rubyVersion "2" "3" "8" "";
     sha256 = {
