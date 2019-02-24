@@ -29,7 +29,7 @@ let
     then "$out/bin/ruby"
     else "${buildPackages.ruby}/bin/ruby";
 
-  generic = { version, sha256 }: let
+  generic = { version, sha256, patches ? [] }: let
     ver = version;
     tag = ver.gitTag;
     isRuby25 = ver.majMin == "2.5";
@@ -96,11 +96,7 @@ let
 
         enableParallelBuilding = true;
 
-        patches =
-          (import ./patchsets.nix {
-            inherit patchSet useRailsExpress ops;
-            patchLevel = ver.patchLevel;
-          })."${ver.majMinTiny}" or [];
+        inherit patches;
 
         postUnpack = ''
           cp -r ${unpackdir rubygemsSrc} ${sourceRoot}/rubygems
@@ -211,6 +207,11 @@ in {
       src = "1gwsqmrhpx1wanrfvrsj3j76rv888zh7jag2si2r14qf8ihns0dm";
       git = "0158fg1sx6l6applbq0831kl8kzx5jacfl9lfg0shfzicmjlys3f";
     };
+    patches = [
+      "${patchSet}/patches/ruby/2.3/head/railsexpress/01-skip-broken-tests.patch"
+      "${patchSet}/patches/ruby/2.3/head/railsexpress/02-improve-gc-stats.patch"
+      "${patchSet}/patches/ruby/2.3/head/railsexpress/03-display-more-detailed-stack-trace.patch"
+    ];
   };
 
   ruby_2_4 = generic {
@@ -219,6 +220,11 @@ in {
       src = "162izk7c72y73vmdgcbsh8kqihrbm65xvp53r1s139pzwqd78dv7";
       git = "181za4h6bd2bkyzyknxc18i5gq0pnqag60ybc17p0ixw3q7pdj43";
     };
+    patches = [
+      "${patchSet}/patches/ruby/2.4/head/railsexpress/01-skip-broken-tests.patch"
+      "${patchSet}/patches/ruby/2.4/head/railsexpress/02-improve-gc-stats.patch"
+      "${patchSet}/patches/ruby/2.4/head/railsexpress/03-display-more-detailed-stack-trace.patch"
+    ];
   };
 
   ruby_2_5 = generic {
@@ -227,5 +233,10 @@ in {
       src = "0v4442aqqlzxwc792kbkfs2k61qg97r680is6gx20z63a8wd0a4q";
       git = "0r9mgvqk6gj8pc9q6qmy7j2kbln7drc8wy67sb2ij8ciclcw9nn2";
     };
+    patches = [
+      "${patchSet}/patches/ruby/2.5/head/railsexpress/01-fix-broken-tests-caused-by-ad.patch"
+      "${patchSet}/patches/ruby/2.5/head/railsexpress/02-improve-gc-stats.patch"
+      "${patchSet}/patches/ruby/2.5/head/railsexpress/03-more-detailed-stacktrace.patch"
+    ];
   };
 }
